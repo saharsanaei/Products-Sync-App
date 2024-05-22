@@ -1,7 +1,8 @@
 sku,name,price,count
 1,oil,800,6
-2,rice,700,10
+2,rice,1000000,10
 3,cake,600,10
 4,ice cream,500,4
 5,hi,444,6
 6,lol,9000,20
+7,water,500,600
