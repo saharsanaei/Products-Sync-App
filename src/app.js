@@ -84,36 +84,3 @@ async function deleteProductFromDb(sku) {
 
 // Example usage: sync products from CSV
 syncProducts();
-
-async function removeProductsNotInCSV() {
-  const skusInCSV = [];
-
-  // Read CSV file and collect SKUs
-  fs.createReadStream('products.csv')
-    .pipe(csv())
-    .on('data', (row) => {
-      skusInCSV.push(row.sku);
-    })
-    .on('end', async () => {
-      try {
-        // Get SKUs from the database
-        const dbProducts = await client.query('SELECT sku FROM public.products');
-        const skusInDB = dbProducts.rows.map(row => row.sku);
-
-        // Find SKUs in the database that are not in the CSV
-        const skusToRemove = skusInDB.filter(sku => !skusInCSV.includes(sku));
-
-        // Delete products with SKUs not in the CSV
-        if (skusToRemove.length > 0) {
-          await client.query('DELETE FROM public.products WHERE sku IN ($1)', [skusToRemove]);
-          console.log('Records for SKUs not present in CSV have been removed from the database.');
-        } else {
-          console.log('No records to remove.');
-        }
-      } catch (err) {
-        console.error('Error removing records:', err);
-      }
-    });
-}
-
-removeProductsNotInCSV();
